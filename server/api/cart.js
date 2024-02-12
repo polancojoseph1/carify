@@ -4,11 +4,6 @@ const getConnection = require('../db');
 
 getConnection()
 
-async function test() {
-  const rows = await process.postgresql.query('SELECT * FROM product');
-  console.log(rows);
-}
-
 router.get('/:userId', async (req, res, next) => {
   // if (req.user.id != req.params.userId) {
   //   res.send('cannot access data');
