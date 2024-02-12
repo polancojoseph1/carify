@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const query = `SELECT * FROM product WHERE id = ${req.params.id}`
+    const query = `SELECT * FROM product WHERE id = ${req.params.id} LIMIT 1`
     const selectedProduct = await process.postgresql.query(query);
     res.status(200).json(selectedProduct);
   } catch (err) {
@@ -27,8 +27,8 @@ router.get('/:id', async (req, res, next) => {
 router.put('/', async (req, res, next) => {
   try {
     const { productId, quantity: quantityBought } = req.body;
-    const getQuery = `SELECT * FROM product WHERE id = ${productId}`
-    const product = await process.postgresql.query(getQuery);
+    const getQuery = `SELECT * FROM product WHERE id = ${productId} LIMIT 1`
+    const [product] = await process.postgresql.query(getQuery);
     const updateQuery = `
     UPDATE product
     SET quantity = ${product.quantity - quantityBought} 

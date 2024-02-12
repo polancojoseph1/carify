@@ -6,7 +6,7 @@ getConnection()
 router.get('/:cartId', async (req, res, next) => {
   try {
     const cartDetail = await process.postgresql.query(`
-    SELECT * FROM cart_product WHERE card_id = ${ req.params.cartId }
+    SELECT * FROM cart_product WHERE card_id = ${ req.params.cartId } LIMIT 1
     `);
     res.status(200).json(cartDetail);
   } catch (error) {

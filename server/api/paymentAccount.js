@@ -1,24 +1,24 @@
 const router = require('express').Router();
-const stripe = require('./stripe');
+// const stripe = require('./stripe');
 const getConnection = require('../db');
 
 getConnection()
 
-const postStripeCharge = res => (stripeErr, stripeRes) => {
-  if (stripeErr) {
-    res.status(500).send({error: stripeErr});
-  } else {
-    res.status(200).send({success: stripeRes});
-  }
-};
+// const postStripeCharge = res => (stripeErr, stripeRes) => {
+//   if (stripeErr) {
+//     res.status(500).send({error: stripeErr});
+//   } else {
+//     res.status(200).send({success: stripeRes});
+//   }
+// };
 
-router.get('/stripe', (req, res) => {
-  res.send({message: 'Stripe Server'});
-});
+// router.get('/stripe', (req, res) => {
+//   res.send({message: 'Stripe Server'});
+// });
 
-router.post('/stripe', (req, res) => {
-  stripe.charges.create(req.body, postStripeCharge(res));
-});
+// router.post('/stripe', (req, res) => {
+//   stripe.charges.create(req.body, postStripeCharge(res));
+// });
 
 router.get('/', async (req, res, next) => {
   try {

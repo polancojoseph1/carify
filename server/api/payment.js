@@ -20,7 +20,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    const query = `SELECT * FROM payment WHERE id = ${id}`
+    const query = `SELECT * FROM payment WHERE id = ${id} LIMIT 1`
     const payment = await process.postgresql.query(query);
     if (payment) {
       res.json(payment);

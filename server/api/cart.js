@@ -10,7 +10,7 @@ router.get('/:userId', async (req, res, next) => {
   // }
   try {
     const userId = req.user.id
-    const getQuery = `SELECT * FROM cart WHERE user_id = ${userId}`
+    const getQuery = `SELECT * FROM cart WHERE user_id = ${userId} LIMIT 1`
     let cart = await process.postgresql.query(getQuery)
     if (!cart.length) {
       const insertQuery = `
@@ -61,7 +61,7 @@ router.post('/:userId', async (req, res, next) => {
 router.put('/:cartId', async (req, res, next) => {
   try {
     const cartId = req.params.cartId
-    const getQuery = `SELECT * FROM cart WHERE id = ${cartId}`
+    const getQuery = `SELECT * FROM cart WHERE id = ${cartId} LIMIT 1`
     const activeCart = await process.postgresql.query(getQuery);
     const {status, paymentAccountId} = req.body;
     const updateQuery = `

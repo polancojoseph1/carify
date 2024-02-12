@@ -15,8 +15,8 @@ router.get('/', async (req, res, next) => {
     // users' passwords are encrypted, it won't help if we just
     // send everything to anyone who asks!
     const query = `SELECT id, email, name FROM "user";`
-    const user = await process.postgresql.query(query);
-    res.json(user);
+    const users = await process.postgresql.query(query);
+    res.json(users);
   } catch (err) {
     next(err);
   }
