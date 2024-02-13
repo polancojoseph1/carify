@@ -3,10 +3,19 @@ const getConnection = require('../db');
 
 getConnection()
 
+router.get('/', async (req, res, next) => {
+  try {
+    const cartDetails = await process.postgresql.query(`SELECT * FROM cart_product`);
+    res.status(200).json(cartDetails);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/:cartId', async (req, res, next) => {
   try {
     const cartDetail = await process.postgresql.query(`
-    SELECT * FROM cart_product WHERE card_id = ${ req.params.cartId } LIMIT 1
+    SELECT * FROM cart_product WHERE cart_id = ${ req.params.cartId } LIMIT 1
     `);
     res.status(200).json(cartDetail);
   } catch (error) {
@@ -25,11 +34,12 @@ router.post('/', async (req, res, next) => {
       totalPrice
     )
     VALUES (
-      cart_id = ${cartId},
-      product_id = ${productId},
-      quantity = ${quantity},
-      totalPrice = ${totalPrice}
+      ${cartId},
+      ${productId},
+      ${quantity},
+      ${totalPrice}
     )
+    RETURNING *
     `);
     res
       .status(200)
@@ -50,11 +60,12 @@ router.put('/', async (req, res, next) => {
     const order = await process.postgresql.query(`
     UPDATE cart_product 
     SET
-      quantity = ${product.quantity + newQuantity},
-      totalPrice = ${product.totalPrice + newPrice}
+      quantity = quantity + ${newQuantity},
+      totalPrice = totalPrice + ${newPrice}
     WHERE
-      cart_id = ${cartId},
+      cart_id = ${cartId} AND
       product_id = ${productId}
+    RETURNING *
     `);
     res.status(200).json({order, message: 'Edited cart item successfully!'});
   } catch (error) {
@@ -67,7 +78,7 @@ router.delete('/:cartId/:productId', async (req, res, next) => {
     await process.postgresql.query(`
     DELETE FROM cart_product
     WHERE
-      cart_id = ${req.params.cartId},
+      cart_id = ${req.params.cartId} AND
       product_id = ${req.params.productId}
     `);
     res

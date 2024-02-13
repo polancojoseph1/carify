@@ -1,6 +1,7 @@
 const router = require('express').Router();
-// const {isAdmin} = require('./security');
+const {isAdmin} = require('./security');
 const getConnection = require('../db');
+const { generateRandomId } = require('./utils');
 
 getConnection()
 
@@ -52,10 +53,13 @@ router.post('/', async (req, res, next) => {
       condition,
       description,
       quantity,
-      imageUrl
+      imageUrl,
+      totalRating,
+      numberRating
     } = req.body;
     const query = `
     INSERT INTO product (
+      id,
       brand, 
       model, 
       category, 
@@ -69,18 +73,20 @@ router.post('/', async (req, res, next) => {
       numberRating
     )
     VALUES (
-      ${brand}, 
-      ${model}, 
-      ${category}, 
-      ${color}, 
+      ${generateRandomId()},
+      '${brand}', 
+      '${model}', 
+      '${category}', 
+      '${color}', 
       ${price}, 
-      ${condition}, 
-      ${description}, 
+      '${condition}', 
+      '${description.replace(/'/g, "''")}', 
       ${quantity}, 
-      ${imageUrl}, 
+      '${imageUrl}', 
       ${totalRating}, 
       ${numberRating}
-    );`;
+    )
+    RETURNING *;`;
     const newProduct = await process.postgresql.query(query)
     res.status(200).json(newProduct);
   } catch (error) {

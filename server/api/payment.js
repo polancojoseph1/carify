@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const {generateRandomId} = require('./utils');
 const getConnection = require('../db');
 
 getConnection()
@@ -34,12 +35,15 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const query = `INSERT INTO product (
-      type,
+    const query = `INSERT INTO payment (
+      id,
+      type
     )
     VALUES (
-      ${req.body.type},
-    );`;
+      ${generateRandomId()},
+      '${req.body.type}'
+    )
+    RETURNING *;`;
     const newPayment = await process.postgresql.query(query);
     if (newPayment) {
       res.json(newPayment);
@@ -53,9 +57,8 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    const payment = await `DELETE FROM payment WHERE id = ${req.params.id}`
+    const payment = await process.postgresql.query(`DELETE FROM payment WHERE id = ${req.params.id} RETURNING *;`)
     if (payment) {
-      await payment.destroy();
       res.json(payment);
     } else {
       res.sendStatus(404);
@@ -69,7 +72,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     const query = `
     UPDATE payment
-    SET type = ${req.body.type} 
+    SET type = '${req.body.type}' 
     WHERE id = ${req.params.id}
     `
 

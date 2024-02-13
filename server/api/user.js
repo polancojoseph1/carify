@@ -1,13 +1,8 @@
 const router = require('express').Router();
-// const {isAdmin} = require('./security');
+const {isAdmin} = require('./security');
 const getConnection = require('../db');
 
 getConnection()
-
-async function test() {
-  const rows = await process.postgresql.query('SELECT * FROM product');
-  console.log(rows);
-}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -30,10 +25,11 @@ router.put('/:id', async (req, res, next) => {
     const query = `
     UPDATE "user" 
     SET
-      email = ${email}, 
-      name = ${name}
+      email = '${email}', 
+      name = '${name}'
     WHERE
-      id = ${id};
+      id = ${id}
+    RETURNING *;
     `
     const user = await process.postgresql.query(query);
     res.json(user);

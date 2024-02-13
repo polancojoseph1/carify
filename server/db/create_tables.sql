@@ -50,6 +50,12 @@ CREATE TABLE cart_product (
     FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
+CREATE TABLE session (
+    sid VARCHAR(255) PRIMARY KEY,
+    expire TIMESTAMP NOT NULL,
+    sess JSON NOT NULL
+);
+
 -- Add foreign key constraints for the one-to-many relationships
 ALTER TABLE cart ADD COLUMN user_id INTEGER;
 ALTER TABLE cart ADD COLUMN payment_account_id INTEGER;
