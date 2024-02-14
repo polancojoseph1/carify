@@ -13,7 +13,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const cartProducts = getAllCartProducts();
+    const cartProducts = await getAllCartProducts();
     res.status(200).json(cartProducts);
   } catch (error) {
     next(error);
@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:cartId', async (req, res, next) => {
   try {
-    const cartProduct = getCartProductByCartId(req.params.cartId);
+    const cartProduct = await getCartProductByCartId(req.params.cartId);
     res.status(200).json(cartProduct);
   } catch (error) {
     next(error);
@@ -32,7 +32,7 @@ router.get('/:cartId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const {cartId, productId, quantity, totalPrice} = req.body;
-    const cartProduct = addCartProduct(generateRandomId(), cartId, productId, quantity, totalPrice)
+    const cartProduct = await addCartProduct(generateRandomId(), cartId, productId, quantity, totalPrice)
     res
       .status(200)
       .json({cartProduct, message: 'Added new cart item successfully!'});
@@ -49,7 +49,7 @@ router.put('/', async (req, res, next) => {
       addedQuantity,
       addedPrice
     } = req.body;
-    const cartProduct = updateCartProduct(cartId, productId, addedQuantity, addedPrice)
+    const cartProduct = await updateCartProduct(cartId, productId, addedQuantity, addedPrice)
     res.status(200).json({cartProduct, message: 'Edited cart item successfully!'});
   } catch (error) {
     next(error);
@@ -59,7 +59,7 @@ router.put('/', async (req, res, next) => {
 router.delete('/:cartId/:productId', async (req, res, next) => {
   try {
     const { cartId, productId } = req.params;
-    const deletedCartProduct = deleteCartProduct(cartId, productId)
+    const deletedCartProduct = await deleteCartProduct(cartId, productId)
     if (deletedCartProduct.length) {
       message = 'Deleted cart item successfully!'
     } else {

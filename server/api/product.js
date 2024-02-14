@@ -14,7 +14,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const products = getAllProducts()
+    const products = await getAllProducts()
     res.json(products);
   } catch (err) {
     next(err);
@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const product = getProductById(req.params.id);
+    const product = await getProductById(req.params.id);
     res.status(200).json(product);
   } catch (err) {
     next(err);
@@ -45,7 +45,7 @@ router.post('/', async (req, res, next) => {
       totalRating,
       numberRating
     } = req.body;
-    const newProduct = addProduct(
+    const newProduct = await addProduct(
       generateRandomId(),
       brand,
       model,
@@ -69,7 +69,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     const { id } = req.params.id
     const { quantityBought } = req.body;
-    updateProduct(id, quantityBought)
+    await updateProduct(id, quantityBought)
     res.status(200).json({message: 'Edited products successfully!'});
   } catch (err) {
     next(err);

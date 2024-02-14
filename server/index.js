@@ -57,6 +57,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 const createApp = () => {
+  console.log("Creating app")
   // logging middleware
   app.use(morgan('dev'));
 
@@ -76,6 +77,7 @@ const createApp = () => {
       saveUninitialized: false
     })
   );
+
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -92,6 +94,11 @@ const createApp = () => {
     } else {
       next();
     }
+  });
+
+   // sends index.html
+   app.use('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public/index.html'));
   });
 
   // error handling endware
@@ -114,8 +121,8 @@ const startListening = () => {
 };
 
 async function bootApp() {
-  await createApp();
-  await startListening();
+  createApp();
+  startListening();
 }
 // This evaluates as true when this file is run directly from the command line,
 // i.e. when we say 'node server/index.js' (or 'nodemon server/index.js', or 'nodemon server', etc)

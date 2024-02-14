@@ -14,12 +14,12 @@ router.post('/login', async (req, res, next) => {
   try {
     // Login existing user
     const { email, password } = req.body;
-    const user = loginUser(email, password);
+    const user = await loginUser(email, password);
     if (!user) {
       res.status(401).send('Wrong username and/or password');
     } else {
       req.login(user, err =>
-        err ? next(err) : res.json({user, cart})
+        err ? next(err) : res.json({user})
       );
     }
   } catch (err) {
@@ -33,14 +33,11 @@ router.post('/signup', async (req, res, next) => {
     const {email, name, password} = req.body;
     const user = await signUpUser(generateRandomId(), email, name, password);
 
-    console.log(user,"user <-------------")
-
     req.login(user, err =>
-      err ? next(err) : res.json({user, cart})
+      err ? next(err) : res.json({user})
     );
   } catch (err) {
-    console.log(err.constraint, "<------------- error info")
-    if (err.name === 'SQLUniqueConstraintError') { // Check this and change error name
+    if (err.constraint === 'user_email_key') {
       res.status(401).send('User already exists');
     } else {
       next(err);
@@ -51,20 +48,28 @@ router.post('/signup', async (req, res, next) => {
 router.post('/guest', async (req, res, next) => {
   try {
     // Create guest user
-    const user = guestUser(generateRandomId(), generateRandomId())
+    const user = await guestUser(generateRandomId(), generateRandomId())
 
-    res
-      .status(200)
-      .json({message: 'Guest user and cart managed successfully!', user});
+    req.login(user, err =>
+      err ? next(err) : res.json({message: 'Guest user managed successfully!', user})
+    )
   } catch (err) {
     next(err);
   }
 });
 
-router.post('/logout', (req, res) => {
-  req.logout();
-  req.session.destroy();
-  res.redirect('/');
+router.post('/logout', (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy(function(err) {
+      if (err) {
+        return next(err);
+      }
+      res.send({"message": "Successfully logged out!"})
+    });
+  });
 });
 
 router.get('/me', (req, res) => {

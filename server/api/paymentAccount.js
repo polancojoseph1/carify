@@ -30,7 +30,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const allPaymentAccounts = getAllPaymentAccountsJoinPayment();
+    const allPaymentAccounts = await getAllPaymentAccountsJoinPayment();
     if (allPaymentAccounts) {
       res.json(allPaymentAccounts);
     } else {
@@ -44,7 +44,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    const paymentAccount = getPaymentAccountById(id)
+    const paymentAccount = await getPaymentAccountById(id)
     if (paymentAccount) {
       res.json(paymentAccount);
     } else {
@@ -58,7 +58,7 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const {name, paymentId, userId} = req.body;
-    const newPaymentAccount = addPaymentAccount(
+    const newPaymentAccount = await addPaymentAccount(
       generateRandomId(),
       name,
       paymentId,
@@ -76,7 +76,7 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    paymentAccount = updatePaymentAccount(req.params.id, req.body.name)
+    paymentAccount = await updatePaymentAccount(req.params.id, req.body.name)
     res.json(paymentAccount);
   } catch (error) {
     next(error);
@@ -86,7 +86,7 @@ router.put('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    const deletedPaymentAccount = deletePaymentAccount(id)
+    const deletedPaymentAccount = await deletePaymentAccount(id)
     if (deletedPaymentAccount) {
       res.json(deletedPaymentAccount);
     } else {

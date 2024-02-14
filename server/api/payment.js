@@ -14,7 +14,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const allPayments = getAllPayments;
+    const allPayments = await getAllPayments;
     if (allPayments) {
       res.json(allPayments);
     } else {
@@ -28,7 +28,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    const payment = getPaymentById(id);
+    const payment = await getPaymentById(id);
     if (payment) {
       res.json(payment);
     } else {
@@ -41,7 +41,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const newPayment = addPayment(generateRandomId(), req.body.type);
+    const newPayment = await addPayment(generateRandomId(), req.body.type);
     if (newPayment) {
       res.json(newPayment);
     } else {
@@ -54,7 +54,7 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    updatePayment(req.params.id, req.body.type);
+    await updatePayment(req.params.id, req.body.type);
     res.json({message: 'Payment successfully updated'});
   } catch (error) {
     next(error);
@@ -63,7 +63,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    const payment = deletePayment(req.params.id)
+    const payment = await deletePayment(req.params.id)
     if (payment) {
       res.json(payment);
     } else {
