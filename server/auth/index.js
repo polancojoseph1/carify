@@ -31,12 +31,15 @@ router.post('/signup', async (req, res, next) => {
   try {
     // Create new user
     const {email, name, password} = req.body;
-    const user = signUpUser(generateRandomId(), email, name, password);
+    const user = await signUpUser(generateRandomId(), email, name, password);
+
+    console.log(user,"user <-------------")
 
     req.login(user, err =>
       err ? next(err) : res.json({user, cart})
     );
   } catch (err) {
+    console.log(err.constraint, "<------------- error info")
     if (err.name === 'SQLUniqueConstraintError') { // Check this and change error name
       res.status(401).send('User already exists');
     } else {
