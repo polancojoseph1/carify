@@ -1,6 +1,12 @@
 const router = require('express').Router();
 const {isAdmin} = require('./security');
-const getConnection = require('../db');
+const {
+  getConnection,
+  getAllProducts,
+  getProductById,
+  addProduct,
+  updateProduct
+} = require('../db');
 const { generateRandomId } = require('./utils');
 
 getConnection()
@@ -8,7 +14,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const products = await process.postgresql.query('SELECT * FROM product');
+    const products = getAllProducts()
     res.json(products);
   } catch (err) {
     next(err);
@@ -17,26 +23,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const query = `SELECT * FROM product WHERE id = ${req.params.id} LIMIT 1`
-    const selectedProduct = await process.postgresql.query(query);
-    res.status(200).json(selectedProduct);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.put('/', async (req, res, next) => {
-  try {
-    const { productId, quantity: quantityBought } = req.body;
-    const getQuery = `SELECT * FROM product WHERE id = ${productId} LIMIT 1`
-    const [product] = await process.postgresql.query(getQuery);
-    const updateQuery = `
-    UPDATE product
-    SET quantity = ${product.quantity - quantityBought} 
-    WHERE id = ${productId}
-    `
-    await process.postgresql.query(updateQuery)
-    res.status(200).json({message: 'Edited products successfully!'});
+    const product = getProductById(req.params.id);
+    res.status(200).json(product);
   } catch (err) {
     next(err);
   }
@@ -57,40 +45,34 @@ router.post('/', async (req, res, next) => {
       totalRating,
       numberRating
     } = req.body;
-    const query = `
-    INSERT INTO product (
-      id,
-      brand, 
-      model, 
-      category, 
-      color, 
-      price, 
-      condition, 
-      description, 
-      quantity, 
-      imageUrl, 
-      totalRating, 
+    const newProduct = addProduct(
+      generateRandomId(),
+      brand,
+      model,
+      category,
+      color,
+      price,
+      condition,
+      description,
+      quantity,
+      imageUrl,
+      totalRating,
       numberRating
     )
-    VALUES (
-      ${generateRandomId()},
-      '${brand}', 
-      '${model}', 
-      '${category}', 
-      '${color}', 
-      ${price}, 
-      '${condition}', 
-      '${description.replace(/'/g, "''")}', 
-      ${quantity}, 
-      '${imageUrl}', 
-      ${totalRating}, 
-      ${numberRating}
-    )
-    RETURNING *;`;
-    const newProduct = await process.postgresql.query(query)
     res.status(200).json(newProduct);
   } catch (error) {
     next(error);
+  }
+});
+
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params.id
+    const { quantityBought } = req.body;
+    updateProduct(id, quantityBought)
+    res.status(200).json({message: 'Edited products successfully!'});
+  } catch (err) {
+    next(err);
   }
 });
 

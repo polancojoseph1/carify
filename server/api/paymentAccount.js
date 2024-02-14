@@ -1,6 +1,13 @@
 const router = require('express').Router();
 // const stripe = require('./stripe');
-const getConnection = require('../db');
+const {
+  getConnection,
+  getAllPaymentAccountsJoinPayment,
+  getPaymentAccountById,
+  addPaymentAccount,
+  updatePaymentAccount,
+  deletePaymentAccount
+} = require('../db');
 const {generateRandomId} = require('./utils')
 
 getConnection()
@@ -23,12 +30,7 @@ getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const joinQuery = `
-      SELECT pa.*, p.*
-      FROM payment_account pa
-      LEFT JOIN payment p ON pa.payment_id = p.id;
-    `
-    const allPaymentAccounts = await process.postgresql.query(joinQuery);
+    const allPaymentAccounts = getAllPaymentAccountsJoinPayment();
     if (allPaymentAccounts) {
       res.json(allPaymentAccounts);
     } else {
@@ -42,11 +44,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    const paymentAccount = await process.postgresql.query(`
-    SELECT * FROM payment_account
-    WHERE
-     id = ${id}
-    `);
+    const paymentAccount = getPaymentAccountById(id)
     if (paymentAccount) {
       res.json(paymentAccount);
     } else {
@@ -60,20 +58,12 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const {name, paymentId, userId} = req.body;
-    const newPaymentAccount = await process.postgresql.query(`
-    INSERT INTO payment_account (
-      id,
+    const newPaymentAccount = addPaymentAccount(
+      generateRandomId(),
       name,
-      payment_id,
-      user_id
+      paymentId,
+      userId
     )
-    VALUES (
-      ${generateRandomId()},
-      '${name}',
-      ${paymentId},
-      ${userId}
-    )
-    RETURNING *`);
     if (newPaymentAccount) {
       res.json(newPaymentAccount);
     } else {
@@ -84,36 +74,24 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
   try {
-    const paymentAccountId = req.params.id;
-    const paymentAccount = await process.postgresql.query(`
-    DELETE FROM payment_account
-    WHERE id = ${paymentAccountId}
-    RETURNING *
-    `);
-    if (paymentAccount) {
-      res.json(paymentAccount);
-    } else {
-      res.sendStatus(404);
-    }
+    paymentAccount = updatePaymentAccount(req.params.id, req.body.name)
+    res.json(paymentAccount);
   } catch (error) {
     next(error);
   }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
   try {
-    paymentAccount = await process.postgresql.query(`
-    UPDATE payment_account
-    SET
-      name = '${req.body.name}'
-    WHERE
-      id = ${req.params.id}
-    RETURNING *
-    `);
-
-    res.json(paymentAccount);
+    const id = req.params.id;
+    const deletedPaymentAccount = deletePaymentAccount(id)
+    if (deletedPaymentAccount) {
+      res.json(deletedPaymentAccount);
+    } else {
+      res.sendStatus(404);
+    }
   } catch (error) {
     next(error);
   }

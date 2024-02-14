@@ -1,12 +1,20 @@
 const router = require('express').Router();
-const getConnection = require('../db');
+const {
+  getConnection,
+  getAllCartProducts,
+  getCartProductByCartId,
+  addCartProduct,
+  updateCartProduct,
+  deleteCartProduct
+} = require('../db');
+const { generateRandomId } = require('./utils')
 
 getConnection()
 
 router.get('/', async (req, res, next) => {
   try {
-    const cartDetails = await process.postgresql.query(`SELECT * FROM cart_product`);
-    res.status(200).json(cartDetails);
+    const cartProducts = getAllCartProducts();
+    res.status(200).json(cartProducts);
   } catch (error) {
     next(error);
   }
@@ -14,10 +22,8 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:cartId', async (req, res, next) => {
   try {
-    const cartDetail = await process.postgresql.query(`
-    SELECT * FROM cart_product WHERE cart_id = ${ req.params.cartId } LIMIT 1
-    `);
-    res.status(200).json(cartDetail);
+    const cartProduct = getCartProductByCartId(req.params.cartId);
+    res.status(200).json(cartProduct);
   } catch (error) {
     next(error);
   }
@@ -26,24 +32,10 @@ router.get('/:cartId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const {cartId, productId, quantity, totalPrice} = req.body;
-    const newOrder = await process.postgresql.query(`
-    INSERT INTO cart_product (
-      cart_id,
-      product_id,
-      quantity,
-      totalPrice
-    )
-    VALUES (
-      ${cartId},
-      ${productId},
-      ${quantity},
-      ${totalPrice}
-    )
-    RETURNING *
-    `);
+    const cartProduct = addCartProduct(generateRandomId(), cartId, productId, quantity, totalPrice)
     res
       .status(200)
-      .json({newOrder, message: 'Added new cart item successfully!'});
+      .json({cartProduct, message: 'Added new cart item successfully!'});
   } catch (error) {
     next(error);
   }
@@ -54,20 +46,11 @@ router.put('/', async (req, res, next) => {
     const {
       cartId,
       productId,
-      quantity: newQuantity,
-      totalPrice: newPrice
+      addedQuantity,
+      addedPrice
     } = req.body;
-    const order = await process.postgresql.query(`
-    UPDATE cart_product 
-    SET
-      quantity = quantity + ${newQuantity},
-      totalPrice = totalPrice + ${newPrice}
-    WHERE
-      cart_id = ${cartId} AND
-      product_id = ${productId}
-    RETURNING *
-    `);
-    res.status(200).json({order, message: 'Edited cart item successfully!'});
+    const cartProduct = updateCartProduct(cartId, productId, addedQuantity, addedPrice)
+    res.status(200).json({cartProduct, message: 'Edited cart item successfully!'});
   } catch (error) {
     next(error);
   }
@@ -75,15 +58,14 @@ router.put('/', async (req, res, next) => {
 
 router.delete('/:cartId/:productId', async (req, res, next) => {
   try {
-    await process.postgresql.query(`
-    DELETE FROM cart_product
-    WHERE
-      cart_id = ${req.params.cartId} AND
-      product_id = ${req.params.productId}
-    `);
-    res
-      .status(200)
-      .json({message: 'Deleted cart item successfully!'});
+    const { cartId, productId } = req.params;
+    const deletedCartProduct = deleteCartProduct(cartId, productId)
+    if (deletedCartProduct.length) {
+      message = 'Deleted cart item successfully!'
+    } else {
+      message = 'Item to delete not found!'
+    }
+    res.status(200).json({message: message});
   } catch (error) {
     next(error);
   }
