@@ -18,6 +18,8 @@ async function getCartProductsByCartId(cartId) {
   LEFT JOIN product p ON cp.product_id = p.id
   WHERE
     cart_id = ${cartId}
+  ORDER BY
+    price ASC
   `);
   return cartProducts
 }
