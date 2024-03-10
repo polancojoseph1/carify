@@ -35,12 +35,14 @@ async function guestUser(newId, randomKey) {
     id,
     name,
     email,
+    guest,
     password
   )
   VALUES (
     ${newId},
     'guest',
     '${`guest${randomKey}@email.com`}',
+    ${true},
     'guest'
   )
   LIMIT 1

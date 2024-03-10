@@ -3,6 +3,26 @@ async function getAllProducts() {
   return products
 }
 
+async function getProductsByColor(color) {
+  const products = await process.postgresql.query(`
+  SELECT * FROM product WHERE color = '${color}'`);
+  const otherProducts = await process.postgresql.query(`
+  SELECT * FROM product WHERE color <> '${color}'`);
+  return [...products, ...otherProducts]
+}
+
+async function getProductsByRating() {
+  const products = await process.postgresql.query
+    (`SELECT * FROM product ORDER BY totalRating DESC`);
+  return products
+}
+
+async function getProductsByPrice() {
+  const products = await process.postgresql.query
+    (`SELECT * FROM product ORDER BY price ASC`);
+  return products
+}
+
 async function getProductById(id) {
   const query = `SELECT * FROM product WHERE id = ${id} LIMIT 1`
   const product = await process.postgresql.query(query);
@@ -70,6 +90,9 @@ async function updateProduct(id, quantityBought) {
 
 module.exports = {
   getAllProducts,
+  getProductsByColor,
+  getProductsByRating,
+  getProductsByPrice,
   getProductById,
   addProduct,
   updateProduct

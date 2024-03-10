@@ -2,9 +2,11 @@ const router = require('express').Router();
 const {
   getConnection,
   getAllCartProducts,
-  getCartProductByCartId,
+  getCartProductsByCartId,
+  getCartProductByCartIdAndProductId,
   addCartProduct,
-  updateCartProduct,
+  updateCartProductAdd,
+  updateCartProductChange,
   deleteCartProduct
 } = require('../db');
 const { generateRandomId } = require('./utils')
@@ -22,7 +24,20 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:cartId', async (req, res, next) => {
   try {
-    const cartProduct = await getCartProductByCartId(req.params.cartId);
+    const cartProducts = await getCartProductsByCartId(req.params.cartId);
+    res.status(200).json(cartProducts);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/:cartId/:productId', async (req, res, next) => {
+  try {
+    const {
+      cartId,
+      productId
+    } = req.params
+    const cartProduct = await getCartProductByCartIdAndProductId(cartId, productId);
     res.status(200).json(cartProduct);
   } catch (error) {
     next(error);
@@ -41,7 +56,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.put('/', async (req, res, next) => {
+router.put('/add', async (req, res, next) => {
   try {
     const {
       cartId,
@@ -49,7 +64,21 @@ router.put('/', async (req, res, next) => {
       addedQuantity,
       addedPrice
     } = req.body;
-    const cartProduct = await updateCartProduct(cartId, productId, addedQuantity, addedPrice)
+    const cartProduct = await updateCartProductAdd(cartId, productId, addedQuantity, addedPrice)
+    res.status(200).json({cartProduct, message: 'Edited cart item successfully!'});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put('/change/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const {
+      changedQuantity,
+      changedPrice
+    } = req.body;
+    const cartProduct = await updateCartProductChange(id, changedQuantity, changedPrice)
     res.status(200).json({cartProduct, message: 'Edited cart item successfully!'});
   } catch (error) {
     next(error);

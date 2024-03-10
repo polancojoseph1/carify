@@ -8,9 +8,11 @@ const {
 } = require('./cart')
 const {
   getAllCartProducts,
-  getCartProductByCartId,
+  getCartProductsByCartId,
+  getCartProductByCartIdAndProductId,
   addCartProduct,
-  updateCartProduct,
+  updateCartProductAdd,
+  updateCartProductChange,
   deleteCartProduct
 } = require('./cartProduct')
 const {
@@ -29,12 +31,16 @@ const {
 } = require('./paymentAccount')
 const {
   getAllProducts,
+  getProductsByColor,
+  getProductsByRating,
+  getProductsByPrice,
   getProductById,
   addProduct,
   updateProduct
 } = require('./product')
 const {
   getAllUsers,
+  getUserById,
   updateUser
 } = require('./user')
 const {
@@ -84,9 +90,11 @@ module.exports = {
   addCart,
   updateCart,
   getAllCartProducts,
-  getCartProductByCartId,
+  getCartProductsByCartId,
+  getCartProductByCartIdAndProductId,
   addCartProduct,
-  updateCartProduct,
+  updateCartProductAdd,
+  updateCartProductChange,
   deleteCartProduct,
   getAllPayments,
   getPaymentById,
@@ -99,10 +107,14 @@ module.exports = {
   updatePaymentAccount,
   deletePaymentAccount,
   getAllProducts,
+  getProductsByColor,
+  getProductsByRating,
+  getProductsByPrice,
   getProductById,
   addProduct,
   updateProduct,
   getAllUsers,
+  getUserById,
   updateUser,
   loginUser,
   signUpUser,

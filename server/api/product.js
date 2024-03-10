@@ -3,6 +3,9 @@ const {isAdmin} = require('./security');
 const {
   getConnection,
   getAllProducts,
+  getProductsByColor,
+  getProductsByRating,
+  getProductsByPrice,
   getProductById,
   addProduct,
   updateProduct
@@ -15,6 +18,34 @@ getConnection()
 router.get('/', async (req, res, next) => {
   try {
     const products = await getAllProducts()
+    res.json(products);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/color/:color', async (req, res, next) => {
+  try {
+    const { color } = req.params
+    const products = await getProductsByColor(color)
+    res.json(products);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/top', async (req, res, next) => {
+  try {
+    const products = await getProductsByRating()
+    res.json(products);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/price', async (req, res, next) => {
+  try {
+    const products = await getProductsByPrice()
     res.json(products);
   } catch (err) {
     next(err);

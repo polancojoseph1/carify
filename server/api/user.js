@@ -3,6 +3,7 @@ const {isAdmin} = require('./security');
 const {
   getConnection, 
   getAllUsers,
+  getUserById,
   updateUser
 } = require('../db');
 
@@ -12,6 +13,16 @@ router.get('/', async (req, res, next) => {
   try {
     const users = await getAllUsers();
     res.json(users);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await getUserById(userId);
+    res.json(user);
   } catch (err) {
     next(err);
   }

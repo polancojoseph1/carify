@@ -3,12 +3,33 @@ async function getAllCartProducts() {
   return cartProducts
 }
 
-async function getCartProductByCartId(cartId) {
-  const cartProduct = await process.postgresql.query(`
-    SELECT * FROM cart_product
-    WHERE
-      cart_id = ${cartId}
-    LIMIT 1
+async function getCartProductsByCartId(cartId) {
+  const cartProducts = await process.postgresql.query(`
+  SELECT 
+    cp.*, 
+    p.brand, 
+    p.category, 
+    p.price, 
+    p.totalRating, 
+    p.imageUrl, 
+    p.description,
+    p.quantity AS totalQuantity
+  FROM cart_product cp
+  LEFT JOIN product p ON cp.product_id = p.id
+  WHERE
+    cart_id = ${cartId}
+  `);
+  return cartProducts
+}
+
+async function getCartProductByCartIdAndProductId(cartId, 
+  productId) {
+  const [cartProduct] = await process.postgresql.query(`
+  SELECT * FROM cart_product
+  WHERE
+    cart_id = ${cartId} AND
+    product_id = ${productId}
+  LIMIT 1;
   `);
   return cartProduct
 }
@@ -34,8 +55,8 @@ async function addCartProduct(newId, cartId, productId, quantity, totalPrice) {
   return cartProduct
 }
 
-async function updateCartProduct(cartId, productId, addedQuantity, addedPrice) {
-  const cartProduct = await process.postgresql.query(`
+async function updateCartProductAdd(cartId, productId, addedQuantity, addedPrice) {
+  const updatedCartProduct = await process.postgresql.query(`
     UPDATE cart_product 
     SET
       quantity = quantity + ${addedQuantity},
@@ -43,6 +64,19 @@ async function updateCartProduct(cartId, productId, addedQuantity, addedPrice) {
     WHERE
       cart_id = ${cartId} AND
       product_id = ${productId}
+    RETURNING *
+    `);
+  return updatedCartProduct
+}
+
+async function updateCartProductChange(id, changedQuantity, changedPrice) {
+  const updatedCartProduct = await process.postgresql.query(`
+    UPDATE cart_product 
+    SET
+      quantity = ${changedQuantity},
+      totalPrice = ${changedPrice}
+    WHERE
+      id = ${id}
     RETURNING *
     `);
   return updatedCartProduct
@@ -61,8 +95,10 @@ async function deleteCartProduct(cartId, productId) {
 
 module.exports = {
   getAllCartProducts,
-  getCartProductByCartId,
+  getCartProductsByCartId,
+  getCartProductByCartIdAndProductId,
   addCartProduct,
-  updateCartProduct,
+  updateCartProductAdd,
+  updateCartProductChange,
   deleteCartProduct
 }

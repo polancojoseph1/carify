@@ -1,11 +1,21 @@
 async function getCartByUserId(userId) {
-  const query = `SELECT * FROM cart WHERE user_id = ${userId}`
+  const query = `
+  SELECT * FROM cart
+  WHERE
+    user_id = ${userId} AND
+    status = 'active'
+  `
   let cart = await process.postgresql.query(query)
   return cart
 }
 
 async function getCartByCartId(cartId) {
-  const query = `SELECT * FROM cart WHERE id = ${cartId}`
+  const query = `
+  SELECT * FROM cart
+  WHERE
+    id = ${cartId} AND
+    status = 'active'
+  `
   let cart = await process.postgresql.query(query)
   return cart
 }
