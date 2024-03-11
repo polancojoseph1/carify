@@ -1,5 +1,4 @@
-const postgresql = require('pg');
-const os = require('os');
+const pg = require('pg');
 
 const {
   getCartByUserId,
