@@ -57,6 +57,7 @@ const getConnection = (callback = null) => {
   console.log('Connecting to database...', process.env.POSTGRES_URL);
   // NOTE: PostgreSQL creates a superuser by default on localhost using the OS username.
   const pool = new Pool({
+    connectionString: process.env.POSTGRES_URL,
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DATABASE,
     password: process.env.POSTGRES_PASSWORD,
