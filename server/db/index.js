@@ -1,5 +1,6 @@
 const postgresql = require('pg');
 const os = require('os');
+
 const {
   getCartByUserId,
   getCartByCartId,
@@ -49,18 +50,15 @@ const {
   guestUser
 } = require('./auth')
 
-const { Pool } = postgresql;
+const { Pool } = pg;
+require('dotenv').config()
 
   
 const getConnection = (callback = null) => {
   // NOTE: PostgreSQL creates a superuser by default on localhost using the OS username.
   const pool = new Pool({
-    user: process.env.NODE_ENV === 'development' && (os.userInfo() || {}).username || '',
-    database: 'carify',
-    password: '',
-    host: '127.0.0.1',
-    port: 5432,
-  });
+    connectionString: process.env.POSTGRES_URL,
+  })
 
   const connection = {
     pool,

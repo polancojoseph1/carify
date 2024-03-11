@@ -9,11 +9,13 @@
     "seed": "npm run delete-data && npm run create-tables && npm run add-data",
     "delete-data": "psql -d carify -f sql/delete_data.sql",
     "create-tables": "psql -d carify -f sql/create_tables.sql",
-    "add-data": "psql -d carify -f sql/add_data.sql"
+    "add-data": "psql -d carify -f sql/add_data.sql",
+    "vercel-build": "echo hello world"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vercel/postgres": "^0.7.2",
     "compression": "^1.7.4",
     "connect-pg-simple": "^9.0.1",
     "connect-session-sequelize": "^7.1.7",
