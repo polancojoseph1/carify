@@ -6,13 +6,13 @@ const {
   guestUser
 } = require('../db');
 const {generateRandomId} = require('../api/utils');
-getConnection()
 
 module.exports = router;
 
 router.post('/login', async (req, res, next) => {
   try {
     // Login existing user
+    getConnection()
     const { email, password } = req.body;
     const user = await loginUser(email, password);
     if (!user) {
@@ -30,6 +30,7 @@ router.post('/login', async (req, res, next) => {
 router.post('/signup', async (req, res, next) => {
   try {
     // Create new user
+    getConnection()
     const {email, name, password} = req.body;
     const user = await signUpUser(generateRandomId(), email, name, password);
 
@@ -48,6 +49,7 @@ router.post('/signup', async (req, res, next) => {
 router.post('/guest', async (req, res, next) => {
   try {
     // Create guest user
+    getConnection()
     const user = await guestUser(generateRandomId(), generateRandomId())
 
     req.login(user, err =>
