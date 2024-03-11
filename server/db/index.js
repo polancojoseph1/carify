@@ -54,6 +54,7 @@ require('dotenv').config()
 
   
 const getConnection = (callback = null) => {
+  console.log('Connecting to database...', process.env.POSTGRES_URL);
   // NOTE: PostgreSQL creates a superuser by default on localhost using the OS username.
   const pool = new Pool({
     connectionString: process.env.POSTGRES_URL,
