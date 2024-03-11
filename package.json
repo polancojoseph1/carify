@@ -10,7 +10,7 @@
     "delete-data": "psql -d carify -f sql/delete_data.sql",
     "create-tables": "psql -d carify -f sql/create_tables.sql",
     "add-data": "psql -d carify -f sql/add_data.sql",
-    "vercel-build": "npm run seed"
+    "vercel-build": "echo hello world"
   },
   "author": "",
   "license": "ISC",
