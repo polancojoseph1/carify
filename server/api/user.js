@@ -83,8 +83,12 @@ router.post('/guest', async (req, res, next) => {
     // Create guest user
     const user = await guestUser(generateRandomId(), generateRandomId())
 
-    req.login(user, err =>
-      err ? next(err) : res.json({message: 'Guest user managed successfully!', user})
+    console.log(req.login, "request.login")
+    req.login(user, err => {
+      console.log(user, "user <------>")
+      console.log(err, "err <------>")
+      return (err ? next(err) : res.json({message: 'Guest user managed successfully!', user}))
+    }
     )
   } catch (err) {
     next(err);
