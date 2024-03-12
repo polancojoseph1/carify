@@ -49,7 +49,6 @@ async function guestUser(newId, randomKey) {
   RETURNING *
   `
   const [user] = await process.postgresql.query(query);
-  console.log(user, "new guest user <-------->")
   return user
 }
 

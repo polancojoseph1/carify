@@ -14,9 +14,9 @@ module.exports = app;
 
 // Create a PostgreSQL client
 function createPgPool() {
-  const username = process.env.NODE_ENV === 'development' && (os.userInfo() || {}).username || '';
+  const username = process.env.POSTGRES_USER || '';
   return new pg.Pool({
-    connectionString: `postgresql://${username}:@localhost:5432/carify`
+    connectionString: process.env.POSTGRES_URL
   });
 }
 
