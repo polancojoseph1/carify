@@ -9,10 +9,12 @@ const {generateRandomId} = require('../api/utils');
 
 module.exports = router;
 
+
+getConnection()
+
 router.post('/login', async (req, res, next) => {
   try {
     // Login existing user
-    getConnection()
     const { email, password } = req.body;
     const user = await loginUser(email, password);
     if (!user) {
@@ -30,7 +32,6 @@ router.post('/login', async (req, res, next) => {
 router.post('/signup', async (req, res, next) => {
   try {
     // Create new user
-    getConnection()
     const {email, name, password} = req.body;
     const user = await signUpUser(generateRandomId(), email, name, password);
 
@@ -49,11 +50,14 @@ router.post('/signup', async (req, res, next) => {
 router.post('/guest', async (req, res, next) => {
   try {
     // Create guest user
-    getConnection()
     const user = await guestUser(generateRandomId(), generateRandomId())
 
-    req.login(user, err =>
-      err ? next(err) : res.json({message: 'Guest user managed successfully!', user})
+    console.log(req.login, "request.login")
+    req.login(user, err => {
+      console.log(user, "user <------>")
+      console.log(err, "err <------>")
+      return (err ? next(err) : res.json({message: 'Guest user managed successfully!', user}))
+    }
     )
   } catch (err) {
     next(err);
