@@ -1,5 +1,3 @@
-import { sql } from "@vercel/postgres";
-
 async function loginUser(email, password) {
   const query = `
     SELECT * FROM "user"
@@ -27,11 +25,7 @@ async function signUpUser(newId, email, name, password) {
     )
     RETURNING *
     `
-  console.log(SQL, "sql")
-  // const [user] = await process.postgresql.query(query);
-  const [user] = await sql(query);
-  console.log(user, "user");
-  // const [user] = await process.postgresql.query(query);
+  const [user] = await process.postgresql.query(query);
   return user
 }
 
