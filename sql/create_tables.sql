@@ -76,3 +76,6 @@ ALTER TABLE payment_account ADD CONSTRAINT fk_payment_account_payment
 
 ALTER TABLE payment_account ADD CONSTRAINT fk_payment_account_user
     FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+ALTER TABLE cart_product ADD CONSTRAINT unique_product_id_per_cart
+    UNIQUE (product_id);

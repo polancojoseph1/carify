@@ -4,7 +4,8 @@ const {
   getConnection,
   getCartByUserId,
   addCart,
-  updateCart
+  updateCart,
+  updateCartUserId
 } = require('../db');
 const {generateRandomId} = require('./utils');
 
@@ -39,6 +40,16 @@ router.put('/:cartId', async (req, res, next) => {
     const cartId = req.params.cartId
     const {status, paymentAccountId} = req.body;
     const cart = await updateCart(cartId, status, paymentAccountId);
+    res.status(200).json({cart, message: 'Paid cart successfully!'});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put('/:cartId/:userId', async (req, res, next) => {
+  try {
+    const {cartId, userId} = req.params
+    const cart = await updateCartUserId(cartId, userId);
     res.status(200).json({cart, message: 'Paid cart successfully!'});
   } catch (error) {
     next(error);

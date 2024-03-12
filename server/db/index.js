@@ -4,7 +4,8 @@ const {
   getCartByUserId,
   getCartByCartId,
   addCart,
-  updateCart
+  updateCart,
+  updateCartUserId
 } = require('./cart')
 const {
   getAllCartProducts,
@@ -91,6 +92,7 @@ module.exports = {
   getCartByCartId,
   addCart,
   updateCart,
+  updateCartUserId,
   getAllCartProducts,
   getCartProductsByCartId,
   getCartProductByCartIdAndProductId,

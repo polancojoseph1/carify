@@ -56,9 +56,22 @@ async function updateCart(cartId, status, paymentAccountId) {
   return updatedCart
 }
 
+async function updateCartUserId(cartId, userId) {
+  const query = `
+  UPDATE cart
+  SET
+    user_id = ${userId}
+  WHERE id = ${cartId}
+  RETURNING *
+  `
+  const updatedCart = await process.postgresql.query(query);
+  return updatedCart
+}
+
 module.exports = {
   getCartByUserId,
   getCartByCartId,
   addCart,
-  updateCart
+  updateCart,
+  updateCartUserId
 }
